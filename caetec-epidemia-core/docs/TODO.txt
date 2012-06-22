@@ -1,0 +1,1 @@
+Resolver erro qwue o cara pode atirar enquanto a lista esta sendo renderizada

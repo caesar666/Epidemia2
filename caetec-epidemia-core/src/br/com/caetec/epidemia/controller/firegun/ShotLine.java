@@ -10,14 +10,18 @@ import br.com.caetec.epidemia.controller.AutoRender;
 import br.com.caetec.epidemia.field.FieldView;
 import br.com.caetec.epidemia.metrics.Position;
 
-
-
 public class ShotLine implements AutoRender
 {
 	private List<Position> line = new ArrayList<Position>();
 	private final Color lineColor = Color.RED;
+	private int lifeTime = 100;
 
 	boolean inverse = false;
+	
+	public boolean isSizeEnoughToDraw()
+	{
+		return this.line.size() > 3;
+	}
 
 	public void calculeShot(Position p1, Position p2)
 	{
@@ -192,13 +196,25 @@ public class ShotLine implements AutoRender
 		return FieldView.getInstance().getTileForPixel(p).isUpFree();
 	}
 
-	
 	public void render(Graphics g)
 	{
 		g.setColor(lineColor);
 
+		if(line == null || line.size() < 3)
+			return;
+		
 		Position begin = line.get(0);
 		Position end = line.get(line.size() - 1);
 		g.drawLine(begin.getX(), begin.getY(), end.getX(), end.getY());
+	}
+
+	@Override
+	public boolean update(long passedMillis)
+	{
+		lifeTime -= passedMillis;
+
+		if (lifeTime <= 0)
+			return true;
+		return false;
 	}
 }

@@ -14,10 +14,14 @@ public class MainWindow extends JFrame
 	private static final long serialVersionUID = 6577115179726472971L;
 	public static GamePanel panel;
 	private static Runnable gameCore = new GameCore();
-
+	
+	public static int SIZE_GAME_PANEL_HEIGHT = 640; 
+	public static int SIZE_HEIGHT = SIZE_GAME_PANEL_HEIGHT + 100;
+	public static int SIZE_WIDTH = 1024;
+	
 	public MainWindow()
 	{
-		super("Survive 1.0 - SNAPSHOT");
+		super("Epidemia 1.0 - SNAPSHOT");
 		this.addKeyListener(new Keyboard());
 		this.addMouseListener(new Mouse());
 	}
@@ -31,7 +35,7 @@ public class MainWindow extends JFrame
 	private static void configWindow()
 	{
 		MainWindow mWindow = new MainWindow();
-		mWindow.setSize(new Dimension(1024, 640));
+		mWindow.setSize(new Dimension(MainWindow.SIZE_WIDTH, MainWindow.SIZE_HEIGHT));
 		panel = new GamePanel();
 		mWindow.getContentPane().add(panel);
 		mWindow.setVisible(true);

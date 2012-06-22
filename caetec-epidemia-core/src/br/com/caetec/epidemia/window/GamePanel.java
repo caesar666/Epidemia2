@@ -3,6 +3,7 @@ package br.com.caetec.epidemia.window;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.MouseInfo;
 import java.awt.Point;
 
@@ -19,10 +20,10 @@ import br.com.caetec.epidemia.graphics.ImageStore;
 import br.com.caetec.epidemia.graphics.ShadowManager;
 import br.com.caetec.epidemia.system.ErrorManager;
 
-
 public class GamePanel extends JPanel
 {
 	private static final long serialVersionUID = -1809568356243249099L;
+	private Image bufferImage;
 
 	private void renderAll(Graphics g)
 	{
@@ -34,15 +35,27 @@ public class GamePanel extends JPanel
 		drawListToRender(g);
 		drawCursor(g);
 		Clock.render(g);
+		drawUIPart(g);
 
 		// loadField(); depois quando o server tiver pronto por esse kra na
 		// ativa
 
 	}
 
+	private void drawUIPart(Graphics g)
+	{
+		int beginY = MainWindow.SIZE_GAME_PANEL_HEIGHT;
+		int endY = MainWindow.SIZE_HEIGHT;
+		int beginX = 0;
+		int endX = MainWindow.SIZE_WIDTH;
+		
+		g.setColor(Color.WHITE);
+		g.fillRect(beginX, beginY, endX, endY);
+	}
+
 	private void drawListToRender(Graphics g)
 	{
-		for(AutoRender auto : Controller.toRenderList)
+		for (AutoRender auto : Controller.toRenderList)
 			auto.render(g);
 	}
 
@@ -52,7 +65,7 @@ public class GamePanel extends JPanel
 		Point p = MouseInfo.getPointerInfo().getLocation();
 
 		g.drawImage(ImageStore.getImage("crosshair1"), new Double(p.getX()).intValue() - Tile.size
-				/ 2, new Double(p.getY()).intValue() - Tile.size / 2, null);
+				/ 2, new Double(p.getY()).intValue() - Tile.size * 2, null);
 	}
 
 	private void clearPanel(Graphics g)
@@ -73,7 +86,12 @@ public class GamePanel extends JPanel
 			if (!GameCore.isRunning())
 				return;
 
-			renderAll(g);
+			if (bufferImage == null)
+				bufferImage = createImage(getSize().width, getSize().height);
+
+			renderAll(bufferImage.getGraphics());
+			g.drawImage(bufferImage, 0, 0, null);
+			g.dispose();
 		}
 		catch (Exception e)
 		{

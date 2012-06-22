@@ -1,6 +1,5 @@
 package br.com.caetec.epidemia.controller;
 
-
 import java.awt.Cursor;
 import java.awt.Point;
 import java.awt.Toolkit;
@@ -9,39 +8,41 @@ import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 
 import br.com.caetec.epidemia.graphics.ImageStore;
-import br.com.caetec.epidemia.metrics.Position;
-
+import br.com.caetec.epidemia.item.weapon.Weapon;
 
 public class Mouse implements MouseListener
 {
 	private static Cursor fakeCursor;
 	private static BufferedImage realCursor;
 
-	
 	public void mouseClicked(MouseEvent e)
 	{
 	}
 
-	
 	public void mouseEntered(MouseEvent e)
 	{
 	}
 
-	
 	public void mouseExited(MouseEvent e)
 	{
 	}
 
-	
+	@Override
 	public void mousePressed(MouseEvent e)
 	{
 		if (e.getButton() == MouseEvent.BUTTON1)
-			Controller.shot(new Position(e.getX(), e.getY()));
+		{
+			Weapon.IS_PRESSED = true;
+		}
 	}
 
-	
+	@Override
 	public void mouseReleased(MouseEvent e)
 	{
+		if (e.getButton() == MouseEvent.BUTTON1)
+		{
+			Weapon.IS_PRESSED = false;
+		}
 	}
 
 	public static void changeArrow(Environment environment)
@@ -56,7 +57,7 @@ public class Mouse implements MouseListener
 				break;
 		}
 	}
-	
+
 	public static Cursor getFakeCursor()
 	{
 		return fakeCursor;

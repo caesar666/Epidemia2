@@ -15,15 +15,14 @@ import br.com.caetec.epidemia.people.Humanoid;
 import br.com.caetec.epidemia.people.PlayerCharacter;
 import br.com.caetec.epidemia.people.npc.Zombie;
 
-
 public class Controller
 {
 	private static int time;
-	
+
 	public static PlayerCharacter player;
 	public static Zombie zombieTest;
 	public static List<AutoRender> toRenderList = new ArrayList<AutoRender>();
-	
+
 	public static void load()
 	{
 		player = new PlayerCharacter();
@@ -51,14 +50,43 @@ public class Controller
 	{
 		player.getMove().move();
 		zombieTest.getMove().move();
+
+		if (player.getWeapon().shouldShot())
+			shot(EpidemiaUtils.getMousePosition());
 	}
 
-	public static void updateTime(int time)
+	public static void updateTime(int delay)
 	{
-		Controller.time += time;
-		player.getGraphic().update(time);
-		player.getMove().update(time);
-		zombieTest.getMove().update(time);
+		Controller.time += delay;
+		player.getGraphic().update(delay);
+		player.getMove().update(delay);
+		zombieTest.getMove().update(delay);
+		player.getWeapon().update(delay);
+
+		List<AutoRender> toDeleteList = null;
+		for (AutoRender auto : toRenderList)
+		{
+			boolean remove = auto.update(delay);
+
+			if (remove && toDeleteList == null)
+				toDeleteList = new ArrayList<AutoRender>();
+
+			if (remove)
+				toDeleteList.add(auto);
+		}
+
+		deleteOldAutoRender(toDeleteList);
+	}
+
+	private static void deleteOldAutoRender(List<AutoRender> toDeleteList)
+	{
+		if (toDeleteList != null && toDeleteList.size() > 0)
+		{
+			for (AutoRender auto : toDeleteList)
+			{
+				toRenderList.remove(auto);
+			}
+		}
 	}
 
 	public static void verifyPixelPos(Humanoid human)
@@ -99,21 +127,24 @@ public class Controller
 			human.getMove().tileChangeListener();
 		}
 	}
-	
+
 	public static void shot(Position target)
 	{
 		ShotLine shotLine = new ShotLine();
-		
+
 		Position playerPos = FieldView.getInstance().mapTiles.get(
-				PlayerCharacter.playerPos.getKey()).getPixelPos().getNewPosition();
-		
-		
+				PlayerCharacter.playerPos.getKey())
+				.getPixelPos()
+				.getNewPosition();
+
 		playerPos.add('x', Tile.size / 2);
 		playerPos.add('y', Tile.size / 2);
-		
 		shotLine.calculeShot(playerPos, target);
+		
+		if(!shotLine.isSizeEnoughToDraw())
+			return;
+		
 		Controller.toRenderList.add(shotLine);
 	}
-	
-	
+
 }
